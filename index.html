@@ -48,7 +48,7 @@
   .field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .field input[type=number]{-moz-appearance:textfield}
 
-  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .actions{display:flex;flex-wrap:nowrap;gap:4px;width:100%;margin-top:14px}
   button{
     font:inherit;font-size:14px;padding:10px 16px;border-radius:10px;
     border:1px solid var(--line);background:var(--card);color:var(--ink);
@@ -56,39 +56,38 @@
   }
   button:active{transform:translateY(1px)}
   button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-  .hint{color:var(--muted);font-size:12px;margin-top:10px}
-
-  .calcs{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
-    margin-bottom:16px;
+  .actions button{
+    flex:1 1 auto;min-width:0;white-space:nowrap;text-align:center;
+    font-size:12px;padding:8px 2px;border-radius:8px;overflow:hidden;
   }
-  .calc{
-    background:var(--card);border:1px solid var(--line);border-radius:12px;
-    padding:10px 12px;font-size:12px;color:var(--muted);
+  @media (max-width:340px){
+    .actions button{font-size:11px;padding:8px 1px}
   }
-  .calc b{display:block;color:var(--ink);font-weight:600;font-size:13px;margin-top:2px}
 
-  .results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .results{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
   .card{
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:16px;min-width:0;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:8px 6px;min-width:0;
   }
   .card h2{
-    font-size:13px;font-weight:600;color:var(--muted);margin:0 0 2px;
-    letter-spacing:.08em;
+    font-size:11px;font-weight:600;color:var(--muted);margin:0 0 1px;
+    letter-spacing:.06em;
   }
-  .card .name{font-size:19px;font-weight:600;margin:0 0 14px;letter-spacing:.02em}
-  .card .name small{font-size:13px;font-weight:400;color:var(--muted);margin-left:6px}
+  .card .name{font-size:14px;font-weight:700;margin:0 0 6px;line-height:1.25;letter-spacing:.01em}
+  .card .name small{
+    display:block;font-size:11px;font-weight:400;color:var(--muted);
+    margin:2px 0 0;line-height:1.3;
+  }
 
-  .fig{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
-  .row{display:flex;align-items:center;gap:8px}
+  .fig{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+  .row{display:flex;align-items:center;gap:4px}
   .row .idx{
-    width:14px;flex:0 0 14px;text-align:center;font-size:11px;color:var(--muted);
+    width:10px;flex:0 0 10px;text-align:center;font-size:10px;color:var(--muted);
     font-variant-numeric:tabular-nums;
   }
   .bar{
     --c:var(--ink);
-    flex:1 1 auto;height:11px;min-width:0;
+    flex:1 1 auto;height:4px;min-width:0;
   }
   .bar.yang{background:var(--c);border-radius:3px}
   .bar.yin{
@@ -98,38 +97,36 @@
   .row.active .bar{--c:var(--accent)}
   .row.active .idx{color:var(--accent);font-weight:700}
   .mark{
-    flex:0 0 20px;display:flex;justify-content:flex-end;
+    flex:0 0 14px;display:flex;justify-content:flex-end;
   }
   .mark span{
-    font-size:10px;line-height:1;color:#fff;background:var(--accent);
-    border-radius:999px;padding:4px 5px;
+    font-size:9px;line-height:1;color:#fff;background:var(--accent);
+    border-radius:999px;padding:2px 4px;
   }
 
-  .tokens{border-top:1px solid var(--line);padding-top:10px;margin-bottom:10px}
+  .tokens{border-top:1px solid var(--line);padding-top:6px;margin-bottom:6px}
   .token{
-    display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;color:var(--ink-2);
+    display:flex;align-items:center;gap:4px;font-size:11px;line-height:1.4;padding:1px 0;color:var(--ink-2);
   }
-  .token .pos{color:var(--muted);flex:0 0 34px}
+  .token .pos{color:var(--muted);flex:0 0 20px;font-size:10px}
   .token .nm{font-weight:600;color:var(--ink)}
   .token .wx{color:var(--muted)}
   .role{
-    margin-left:auto;font-size:11px;padding:2px 7px;border-radius:999px;
+    margin-left:auto;font-size:9px;line-height:1.2;padding:1px 4px;border-radius:999px;
     background:var(--chip);color:var(--ink-2);
   }
   .role.ti{background:var(--ink);color:var(--bg)}
 
-  .rel{font-size:13px;color:var(--ink-2);margin:0;padding-top:10px;border-top:1px solid var(--line)}
-  .rel .k{color:var(--muted);margin-right:6px}
+  .rel{font-size:11px;line-height:1.4;color:var(--ink-2);margin:0;padding-top:6px;border-top:1px solid var(--line)}
+  .rel .k{color:var(--muted);margin-right:4px}
   .rel + .rel{margin-top:6px;border-top:0;padding-top:0}
 
   .summary{
-    margin-top:16px;background:var(--card);border:1px solid var(--line);
-    border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--ink-2);
+    margin-top:10px;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;font-size:11px;line-height:1.5;color:var(--ink-2);
   }
-  .summary div{display:flex;gap:8px;padding:3px 0}
-  .summary .k{color:var(--muted);flex:0 0 62px}
-  .empty{color:var(--muted);font-size:14px;padding:8px 0}
-  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:24px;line-height:1.7}
+  .summary div{display:flex;gap:6px;padding:1px 0}
+  .summary .k{color:var(--muted);flex:0 0 44px}
 
   /* ---------- 八卦类象表弹窗 ---------- */
   .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
@@ -214,11 +211,6 @@
   .rec__note::placeholder{color:var(--muted)}
   .archive-empty{color:var(--muted);font-size:13px;text-align:center;padding:22px 0}
 
-  @media (max-width:820px){
-    .results{grid-template-columns:1fr}
-    .calcs{grid-template-columns:1fr}
-    .card{padding:14px}
-  }
   @media (max-width:640px){
     .modal{padding:10px;align-items:center}
     .modal__card{padding:14px 14px 12px;max-height:88vh;border-radius:14px}
@@ -262,19 +254,13 @@
       <button type="button" id="fillTime">填入当前时间</button>
       <button type="button" id="openBagua">八卦类象表</button>
       <button type="button" id="openArchive">观象录 (0)</button>
+      <button type="button" id="clear">清空</button>
       <button type="button" class="primary" id="run">排盘</button>
     </div>
   </section>
 
-  <section class="calcs" id="calcs" hidden></section>
   <section class="results" id="results" hidden></section>
   <div class="summary" id="summary" hidden></div>
-  <div class="empty" id="empty">尚未排盘。</div>
-
-  <footer>
-    仅作排盘计算，不含任何吉凶断语。<br>
-    先天八卦数：乾一 兑二 离三 震四 巽五 坎六 艮七 坤八
-  </footer>
 </div>
 
 <div class="modal" id="baguaModal" hidden role="dialog" aria-modal="true" aria-labelledby="baguaTitle">
@@ -516,7 +502,7 @@
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
   var n1 = $("n1"), n2 = $("n2");
-  var results = $("results"), calcs = $("calcs"), summary = $("summary"), empty = $("empty");
+  var results = $("results"), summary = $("summary");
 
   function readInt(el){
     var v = el.value.trim();
@@ -594,23 +580,7 @@
 
   function render(data){
     results.innerHTML = "";
-    calcs.innerHTML = "";
     summary.innerHTML = "";
-
-    // 计算过程
-    var items = [
-      ["上卦", data.input.n1 + " ÷ 8 余 " + data.upper.num + " → " + data.upper.name + "（" + data.upper.wu + "）"],
-      ["下卦", data.input.n2 + " ÷ 8 余 " + data.lower.num + " → " + data.lower.name + "（" + data.lower.wu + "）"],
-      ["动爻", "(" + data.input.n1 + " + " + data.input.n2 + ") ÷ 6 余 " + data.moving + " → 第 " + data.moving + " 爻（" + (data.moving <= 3 ? "下卦" : "上卦") + "）"]
-    ];
-    items.forEach(function(it){
-      var d = document.createElement("div");
-      d.className = "calc";
-      d.appendChild(document.createTextNode(it[0]));
-      var b = document.createElement("b"); b.textContent = it[1];
-      d.appendChild(b);
-      calcs.appendChild(d);
-    });
 
     // 本卦
     var ben = card("本卦", data.ben.name, "上" + data.ben.upper + data.ben.upperWu + " / 下" + data.ben.lower + data.ben.lowerWu);
@@ -661,19 +631,14 @@
     });
 
     results.hidden = false;
-    calcs.hidden = false;
     summary.hidden = false;
-    empty.hidden = true;
   }
 
   function update(){
     var a = readInt(n1), b = readInt(n2);
     if (a === null || b === null){
       results.hidden = true;
-      calcs.hidden = true;
       summary.hidden = true;
-      empty.hidden = false;
-      empty.textContent = (n1.value.trim() === "" || n2.value.trim() === "") ? "尚未排盘。" : "请输入非负整数。";
       return null;
     }
     var data = window.Pan.computePan(a, b);
@@ -690,6 +655,15 @@
   $("run").addEventListener("click", function(){
     var data = update();
     if (data) saveRecord(data);
+  });
+
+  // 清空：只清当前页面状态，不碰 localStorage 里的观象录
+  $("clear").addEventListener("click", function(){
+    $("subject").value = "";
+    n1.value = "";
+    n2.value = "";
+    results.hidden = true;
+    summary.hidden = true;
   });
   n1.addEventListener("input", update);
   n2.addEventListener("input", update);
