@@ -247,7 +247,7 @@
     <div class="actions">
       <button type="button" id="fillTime">际今时</button>
       <button type="button" id="openBagua">八卦表</button>
-      <button type="button" id="openArchive">观象录 (0)</button>
+      <button type="button" id="openArchive">观象录</button>
       <button type="button" id="run">排盘</button>
       <button type="button" id="clear">清空</button>
     </div>
@@ -619,11 +619,11 @@
     return data;
   }
 
+  // 际今时：只把当前时分填进两个输入框，不触发排盘
   $("fillTime").addEventListener("click", function(){
     var d = new Date();
     n1.value = String(d.getHours());
     n2.value = String(d.getMinutes());
-    update();
   });
   $("run").addEventListener("click", function(){
     var data = update();
@@ -639,19 +639,14 @@
     results.hidden = true;
     results.style.display = "none";
   });
-  n1.addEventListener("input", update);
-  n2.addEventListener("input", update);
-  n1.addEventListener("keydown", function(e){ if (e.key === "Enter") update(); });
-  n2.addEventListener("keydown", function(e){ if (e.key === "Enter") update(); });
 
-  // 支持 ?n1=19&n2=25 直接分享排盘结果
+  // 支持 ?n1=19&n2=25 预填数字（只填，不自动排盘）
   (function(){
     try {
       var q = new URLSearchParams(location.search);
       var a = q.get("n1"), b = q.get("n2");
       if (a !== null && /^\d+$/.test(a)) n1.value = a;
       if (b !== null && /^\d+$/.test(b)) n2.value = b;
-      if (n1.value !== "" && n2.value !== "") update();
     } catch (e) {}
   })();
 
@@ -785,7 +780,7 @@
 
   function updateArchiveCount(){
     var btn = $("openArchive");
-    if (btn) btn.textContent = ARCHIVE_NAME + " (" + readArchive().length + ")";
+    if (btn) btn.textContent = ARCHIVE_NAME;
     var title = $("archiveTitle");
     if (title) title.textContent = ARCHIVE_NAME;
   }
