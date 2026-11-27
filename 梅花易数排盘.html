@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>梅花易数 · 排盘</title>
+<style>
+  :root{
+    --bg:#f5f5f7; --card:#fff; --ink:#1c1c1e; --ink-2:#3a3a3e;
+    --muted:#75757e; --line:#e3e3e8; --accent:#c0392b; --chip:#f0f0f3;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#131315; --card:#1b1b1e; --ink:#ececf0; --ink-2:#d0d0d6;
+      --muted:#9a9aa4; --line:#2c2c31; --accent:#e05a4b; --chip:#26262b;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    font-size:16px; line-height:1.5;
+    padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 24px);
+  }
+  .wrap{max-width:1020px;margin:0 auto;padding:28px 16px 0}
+  header.top{margin-bottom:20px}
+  h1{font-size:20px;font-weight:600;letter-spacing:.02em;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px}
+
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;margin-bottom:16px;
+  }
+  .fields{display:flex;flex-wrap:wrap;gap:12px}
+  .field{flex:1 1 180px;min-width:150px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .field input{
+    width:100%;padding:11px 12px;font-size:16px;color:var(--ink);
+    background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    outline:none;-webkit-appearance:none;appearance:none;
+  }
+  .field input:focus{border-color:var(--ink-2)}
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .field input[type=number]{-moz-appearance:textfield}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  button{
+    font:inherit;font-size:14px;padding:10px 16px;border-radius:10px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    cursor:pointer;-webkit-tap-highlight-color:transparent;
+  }
+  button:active{transform:translateY(1px)}
+  button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .hint{color:var(--muted);font-size:12px;margin-top:10px}
+
+  .calcs{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+    margin-bottom:16px;
+  }
+  .calc{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:10px 12px;font-size:12px;color:var(--muted);
+  }
+  .calc b{display:block;color:var(--ink);font-weight:600;font-size:13px;margin-top:2px}
+
+  .results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;min-width:0;
+  }
+  .card h2{
+    font-size:13px;font-weight:600;color:var(--muted);margin:0 0 2px;
+    letter-spacing:.08em;
+  }
+  .card .name{font-size:19px;font-weight:600;margin:0 0 14px;letter-spacing:.02em}
+  .card .name small{font-size:13px;font-weight:400;color:var(--muted);margin-left:6px}
+
+  .fig{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+  .row{display:flex;align-items:center;gap:8px}
+  .row .idx{
+    width:14px;flex:0 0 14px;text-align:center;font-size:11px;color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .bar{
+    --c:var(--ink);
+    flex:1 1 auto;height:11px;min-width:0;
+  }
+  .bar.yang{background:var(--c);border-radius:3px}
+  .bar.yin{
+    background:linear-gradient(to right,var(--c) 0 43%,transparent 43% 57%,var(--c) 57% 100%);
+    border-radius:3px;
+  }
+  .row.active .bar{--c:var(--accent)}
+  .row.active .idx{color:var(--accent);font-weight:700}
+  .mark{
+    flex:0 0 20px;display:flex;justify-content:flex-end;
+  }
+  .mark span{
+    font-size:10px;line-height:1;color:#fff;background:var(--accent);
+    border-radius:999px;padding:4px 5px;
+  }
+
+  .tokens{border-top:1px solid var(--line);padding-top:10px;margin-bottom:10px}
+  .token{
+    display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;color:var(--ink-2);
+  }
+  .token .pos{color:var(--muted);flex:0 0 34px}
+  .token .nm{font-weight:600;color:var(--ink)}
+  .token .wx{color:var(--muted)}
+  .role{
+    margin-left:auto;font-size:11px;padding:2px 7px;border-radius:999px;
+    background:var(--chip);color:var(--ink-2);
+  }
+  .role.ti{background:var(--ink);color:var(--bg)}
+
+  .rel{font-size:13px;color:var(--ink-2);margin:0;padding-top:10px;border-top:1px solid var(--line)}
+  .rel .k{color:var(--muted);margin-right:6px}
+  .rel + .rel{margin-top:6px;border-top:0;padding-top:0}
+
+  .summary{
+    margin-top:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--ink-2);
+  }
+  .summary div{display:flex;gap:8px;padding:3px 0}
+  .summary .k{color:var(--muted);flex:0 0 62px}
+  .empty{color:var(--muted);font-size:14px;padding:8px 0}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:24px;line-height:1.7}
+
+  /* ---------- 八卦类象表弹窗 ---------- */
+  .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+  .modal[hidden]{display:none}
+  .modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.58);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .modal__card{
+    position:relative;width:min(860px,100%);max-height:min(86vh,780px);
+    overflow:auto;-webkit-overflow-scrolling:touch;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 18px 16px;box-shadow:0 24px 70px rgba(0,0,0,.45);
+    animation:pop .16s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.99)}to{opacity:1;transform:none}}
+  .modal__head{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+  .modal__head h2{margin:0;font-size:15px;font-weight:600;letter-spacing:.02em}
+  .modal__head .sub{margin-top:2px}
+  .modal__close{
+    margin-left:auto;flex:0 0 auto;width:32px;height:32px;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;line-height:1;border-radius:10px;color:var(--ink-2);
+  }
+  table.bagua{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+  table.bagua th{
+    position:sticky;top:0;z-index:1;background:var(--card);
+    text-align:left;font-weight:600;font-size:11px;color:var(--muted);
+    letter-spacing:.06em;padding:8px 8px;border-bottom:1px solid var(--line);
+  }
+  table.bagua td{padding:10px 8px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+  table.bagua tr:last-child td{border-bottom:0}
+  table.bagua col.c-num{width:74px}
+  table.bagua col.c-wx{width:56px}
+  table.bagua col.c-xiang{width:118px}
+  .gua{display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .gua .n{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+  .gua .g{font-weight:600;color:var(--ink);font-size:14px}
+  .gua .s{font-size:16px;color:var(--ink-2)}
+  .wx{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .wx .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:0 0 7px}
+  .wx[data-wx="金"] .dot{background:#9aa0a6}
+  .wx[data-wx="木"] .dot{background:#4e9a6b}
+  .wx[data-wx="水"] .dot{background:#4a7fc1}
+  .wx[data-wx="火"] .dot{background:#c8564a}
+  .wx[data-wx="土"] .dot{background:#a88a5c}
+  .xiang{color:var(--ink-2);font-size:12.5px}
+  .note{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.7}
+
+  /* ---------- 观象录 ---------- */
+  .field--wide{flex:1 1 100%;margin-bottom:12px}
+  .rec{
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;
+    margin-bottom:10px;background:var(--bg);
+  }
+  .rec:last-child{margin-bottom:0}
+  .rec__top{display:flex;align-items:baseline;gap:8px}
+  .rec__q{
+    font-weight:600;font-size:14px;color:var(--ink);min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .rec__meta{
+    margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap;
+    font-variant-numeric:tabular-nums;flex:0 0 auto;
+  }
+  .rec__del{
+    flex:0 0 auto;width:22px;height:22px;padding:0;border:0;border-radius:6px;
+    background:transparent;color:var(--muted);font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rec__del:hover{color:var(--accent);background:var(--chip)}
+  .rec__sum{
+    display:block;width:100%;text-align:left;padding:6px 0 2px;margin:0;
+    border:0;background:none;font-size:12.5px;line-height:1.55;color:var(--ink-2);
+    cursor:pointer;word-break:break-word;
+  }
+  .rec__sum:hover{color:var(--ink)}
+  .rec__sum .arrow{color:var(--muted);padding:0 2px}
+  .rec__note{
+    width:100%;margin-top:4px;padding:6px 8px;font:inherit;font-size:12.5px;
+    color:var(--ink);background:var(--card);border:1px solid var(--line);
+    border-radius:8px;outline:none;display:block;
+  }
+  .rec__note:focus{border-color:var(--ink-2)}
+  .rec__note::placeholder{color:var(--muted)}
+  .archive-empty{color:var(--muted);font-size:13px;text-align:center;padding:22px 0}
+
+  @media (max-width:820px){
+    .results{grid-template-columns:1fr}
+    .calcs{grid-template-columns:1fr}
+    .card{padding:14px}
+  }
+  @media (max-width:640px){
+    .modal{padding:10px;align-items:center}
+    .modal__card{padding:14px 14px 12px;max-height:88vh;border-radius:14px}
+    table.bagua{display:block;table-layout:auto}
+    table.bagua colgroup,table.bagua thead{display:none}
+    table.bagua tbody,table.bagua tr,table.bagua td{display:block;width:auto}
+    table.bagua tr{padding:10px 0;border-bottom:1px solid var(--line)}
+    table.bagua tr:last-child{border-bottom:0}
+    table.bagua td{border:0;padding:2px 0}
+    table.bagua td[data-label]{display:flex;gap:10px}
+    table.bagua td[data-label]::before{
+      content:attr(data-label);flex:0 0 46px;color:var(--muted);font-size:11px;padding-top:2px;
+    }
+    table.bagua td[data-label="卦"]::before{content:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>梅花易数</h1>
+  </header>
+
+  <section class="panel">
+    <div class="field field--wide">
+      <label for="subject">所问何事</label>
+      <input id="subject" type="text" maxlength="60" autocomplete="off"
+             placeholder="所问何事（选填，如：拿快递、模考手感）">
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label for="n1">上卦</label>
+        <input id="n1" type="number" inputmode="numeric" step="1" min="0" placeholder="例如 19" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="n2">下卦</label>
+        <input id="n2" type="number" inputmode="numeric" step="1" min="0" placeholder="例如 25" autocomplete="off">
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="fillTime">填入当前时间</button>
+      <button type="button" id="openBagua">八卦类象表</button>
+      <button type="button" id="openArchive">观象录 (0)</button>
+      <button type="button" class="primary" id="run">排盘</button>
+    </div>
+  </section>
+
+  <section class="calcs" id="calcs" hidden></section>
+  <section class="results" id="results" hidden></section>
+  <div class="summary" id="summary" hidden></div>
+  <div class="empty" id="empty">尚未排盘。</div>
+
+  <footer>
+    仅作排盘计算，不含任何吉凶断语。<br>
+    先天八卦数：乾一 兑二 离三 震四 巽五 坎六 艮七 坤八
+  </footer>
+</div>
+
+<div class="modal" id="baguaModal" hidden role="dialog" aria-modal="true" aria-labelledby="baguaTitle">
+  <div class="modal__backdrop" data-close="1"></div>
+  <div class="modal__card">
+    <div class="modal__head">
+      <div>
+        <h2 id="baguaTitle">八卦类象速查表</h2>
+        <div class="sub">先天八卦数 · 五行 · 爻象 · 类象</div>
+      </div>
+      <button type="button" class="modal__close" id="closeBagua" aria-label="关闭" data-close="1">×</button>
+    </div>
+
+    <table class="bagua">
+      <colgroup>
+        <col class="c-num"><col class="c-wx"><col class="c-xiang"><col>
+      </colgroup>
+      <thead>
+        <tr><th>卦</th><th>五行</th><th>爻象</th><th>类象</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">1</span><span class="g">乾</span><span class="s">☰</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="金"><span class="dot"></span>金</span></td>
+          <td data-label="爻象"><span class="xiang">三阳全实</span></td>
+          <td data-label="类象">极刚、圆满、权威、最高标准、硬核难题、头部、贵重金属</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">2</span><span class="g">兑</span><span class="s">☱</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="金"><span class="dot"></span>金</span></td>
+          <td data-label="爻象"><span class="xiang">顶上一阴破口</span></td>
+          <td data-label="类象">开口、发声、沟通口舌、漏洞/扣分点、喜悦、小金属件</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">3</span><span class="g">离</span><span class="s">☲</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="火"><span class="dot"></span>火</span></td>
+          <td data-label="爻象"><span class="xiang">外阳内阴</span></td>
+          <td data-label="类象">外实内虚、眼睛、屏幕/电子设备、纸张文书、光热、急躁</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">4</span><span class="g">震</span><span class="s">☳</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="木"><span class="dot"></span>木</span></td>
+          <td data-label="爻象"><span class="xiang">底下一阳上顶</span></td>
+          <td data-label="类象">突发、震动、响声、立刻行动、移动/车辆、惊吓</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">5</span><span class="g">巽</span><span class="s">☴</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="木"><span class="dot"></span>木</span></td>
+          <td data-label="爻象"><span class="xiang">底下一阴渗入</span></td>
+          <td data-label="类象">无孔不入、风、犹豫不决、消息传递、网络信号、细长之物</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">6</span><span class="g">坎</span><span class="s">☵</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="水"><span class="dot"></span>水</span></td>
+          <td data-label="爻象"><span class="xiang">外阴内阳</span></td>
+          <td data-label="类象">险阻坑洼、流动、深度思考、隐秘算计、波折卡壳、液体</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">7</span><span class="g">艮</span><span class="s">☶</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="土"><span class="dot"></span>土</span></td>
+          <td data-label="爻象"><span class="xiang">顶上一阳封死</span></td>
+          <td data-label="类象">阻隔、停止、进度卡顿、门槛壁垒、高处/墙角、稳重不动</td>
+        </tr>
+        <tr>
+          <td data-label="卦"><span class="gua"><span class="n">8</span><span class="g">坤</span><span class="s">☷</span></span></td>
+          <td data-label="五行"><span class="wx" data-wx="土"><span class="dot"></span>土</span></td>
+          <td data-label="爻象"><span class="xiang">三阴全虚</span></td>
+          <td data-label="类象">厚实包容、平台、众人、顺从、节奏缓慢、基本盘</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="note">体用生克：用生体（省力大吉）｜体用比和（顺遂吉）｜体克用（费力可成）｜体生用（耗神慢成）｜用克体（受阻难成）</p>
+  </div>
+</div>
+
+<div class="modal" id="archiveModal" hidden role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
+  <div class="modal__backdrop" data-close="archive"></div>
+  <div class="modal__card">
+    <div class="modal__head">
+      <div>
+        <h2 id="archiveTitle">观象录</h2>
+        <div class="sub">起卦存档 · 最新的在最上面</div>
+      </div>
+      <button type="button" class="modal__close" id="closeArchive" aria-label="关闭" data-close="archive">×</button>
+    </div>
+    <div id="archiveList"></div>
+  </div>
+</div>
+
+<script>
+/* == pure == */
+(function(root){
+  "use strict";
+
+  // 先天八卦：爻画顺序 [初爻(下), 二爻(中), 三爻(上)]，1 阳 / 0 阴
+  var TRIGRAMS = {
+    1: { name: "乾", wu: "金", lines: [1, 1, 1] },
+    2: { name: "兑", wu: "金", lines: [1, 1, 0] },
+    3: { name: "离", wu: "火", lines: [1, 0, 1] },
+    4: { name: "震", wu: "木", lines: [1, 0, 0] },
+    5: { name: "巽", wu: "木", lines: [0, 1, 1] },
+    6: { name: "坎", wu: "水", lines: [0, 1, 0] },
+    7: { name: "艮", wu: "土", lines: [0, 0, 1] },
+    8: { name: "坤", wu: "土", lines: [0, 0, 0] }
+  };
+
+  // 由爻画反查卦：键为 "初二三" 拼接
+  var BY_LINES = {};
+  var ORDER = [1, 2, 3, 4, 5, 6, 7, 8];
+  ORDER.forEach(function(k){ BY_LINES[TRIGRAMS[k].lines.join("")] = TRIGRAMS[k]; });
+
+  // 六十四卦名（上卦 + 下卦）
+  var XIANG = { 乾: "天", 兑: "泽", 离: "火", 震: "雷", 巽: "风", 坎: "水", 艮: "山", 坤: "地" };
+  var BEN = { 乾: "乾", 兑: "兑", 离: "离", 震: "震", 巽: "巽", 坎: "坎", 艮: "艮", 坤: "坤" };
+  var HEX_GRID = {
+    乾: ["乾为天", "天泽履", "天火同人", "天雷无妄", "天风姤", "天水讼", "天山遁", "天地否"],
+    兑: ["泽天夬", "兑为泽", "泽火革", "泽雷随", "泽风大过", "泽水困", "泽山咸", "泽地萃"],
+    离: ["火天大有", "火泽睽", "离为火", "火雷噬嗑", "火风鼎", "火水未济", "火山旅", "火地晋"],
+    震: ["雷天大壮", "雷泽归妹", "雷火丰", "震为雷", "雷风恒", "雷水解", "雷山小过", "雷地豫"],
+    巽: ["风天小畜", "风泽中孚", "风火家人", "风雷益", "巽为风", "风水涣", "风山渐", "风地观"],
+    坎: ["水天需", "水泽节", "水火既济", "水雷屯", "水风井", "坎为水", "水山蹇", "水地比"],
+    艮: ["山天大畜", "山泽损", "山火贲", "山雷颐", "山风蛊", "山水蒙", "艮为山", "山地剥"],
+    坤: ["地天泰", "地泽临", "地火明夷", "地雷复", "地风升", "地水师", "地山谦", "坤为地"]
+  };
+
+  var SHENG = { 木: "火", 火: "土", 土: "金", 金: "水", 水: "木" };
+  var KE    = { 木: "土", 土: "水", 水: "火", 火: "金", 金: "木" };
+
+  function hexName(upperName, lowerName){
+    var keys = Object.keys(HEX_GRID);
+    return HEX_GRID[upperName][keys.indexOf(lowerName)];
+  }
+
+  function mod8(n){
+    var r = n % 8;
+    return r === 0 ? 8 : r;
+  }
+  function mod6(n){
+    var r = n % 6;
+    return r === 0 ? 6 : r;
+  }
+
+  // 用（或互、变）对体的五行关系
+  function relation(useWu, bodyWu){
+    if (useWu === bodyWu) return "比和";
+    if (SHENG[useWu] === bodyWu) return "生体";
+    if (KE[useWu] === bodyWu) return "克体";
+    if (SHENG[bodyWu] === useWu) return "体生用";
+    if (KE[bodyWu] === useWu) return "体克用";
+    return "";
+  }
+
+  // 互卦与体的关系措辞（互卦无体用之分）
+  function mutualRelation(wu, bodyWu, label){
+    var r = relation(wu, bodyWu);
+    if (r === "生体") return label + "生体";
+    if (r === "克体") return label + "克体";
+    if (r === "比和") return label + "与体比和";
+    if (r === "体生用") return "体生" + label;
+    if (r === "体克用") return "体克" + label;
+    return "";
+  }
+
+  // 体用关系的中文表述（比和 → 体用比和；其余保持 用生体 / 用克体 / 体生用 / 体克用）
+  function bodyUseLabel(rel){
+    if (rel === "比和") return "体用比和";
+    if (rel === "生体") return "用生体";
+    if (rel === "克体") return "用克体";
+    return rel;
+  }
+
+  function computePan(n1, n2){
+    var up = mod8(n1), low = mod8(n2);
+    var moving = mod6(n1 + n2);
+    var U = TRIGRAMS[up], L = TRIGRAMS[low];
+    var lines = L.lines.concat(U.lines);           // 0..5 = 初..上
+
+    var changed = lines.slice();
+    changed[moving - 1] = changed[moving - 1] ? 0 : 1;
+
+    var huLower = [lines[1], lines[2], lines[3]];
+    var huUpper = [lines[2], lines[3], lines[4]];
+    var huL = BY_LINES[huLower.join("")];
+    var huU = BY_LINES[huUpper.join("")];
+
+    var chLower = BY_LINES[changed.slice(0, 3).join("")];
+    var chUpper = BY_LINES[changed.slice(3, 6).join("")];
+
+    var lowerIsYong = moving <= 3;                 // 动爻在下卦 → 下用上体
+    var bodyIsUpper = lowerIsYong;
+    var bodyWu = bodyIsUpper ? U.wu : L.wu;
+    var useWu  = bodyIsUpper ? L.wu : U.wu;
+    var chUseWu = bodyIsUpper ? chLower.wu : chUpper.wu;
+
+    return {
+      input: { n1: n1, n2: n2 },
+      upper: { num: up, name: U.name, wu: U.wu, lines: U.lines },
+      lower: { num: low, name: L.name, wu: L.wu, lines: L.lines },
+      moving: moving,
+      lines: lines,
+      ben: {
+        name: hexName(U.name, L.name),
+        upper: U.name, lower: L.name,
+        upperWu: U.wu, lowerWu: L.wu,
+        bodySide: bodyIsUpper ? "上" : "下",
+        useSide: bodyIsUpper ? "下" : "上",
+        bodyWu: bodyWu, useWu: useWu,
+        relation: relation(useWu, bodyWu)
+      },
+      hu: {
+        name: hexName(huU.name, huL.name),
+        upper: huU.name, lower: huL.name,
+        upperWu: huU.wu, lowerWu: huL.wu,
+        bodyWu: bodyWu,
+        lowerRelation: mutualRelation(huL.wu, bodyWu, "下互"),
+        upperRelation: mutualRelation(huU.wu, bodyWu, "上互")
+      },
+      bian: {
+        name: hexName(chUpper.name, chLower.name),
+        upper: chUpper.name, lower: chLower.name,
+        upperWu: chUpper.wu, lowerWu: chLower.wu,
+        upperLines: changed.slice(3, 6),
+        lowerLines: changed.slice(0, 3),
+        lines: changed,
+        bodySide: bodyIsUpper ? "上" : "下",
+        useSide: bodyIsUpper ? "下" : "上",
+        bodyWu: bodyWu, useWu: chUseWu,
+        relation: relation(chUseWu, bodyWu)
+      }
+    };
+  }
+
+  root.Pan = { computePan: computePan, TRIGRAMS: TRIGRAMS, HEX_GRID: HEX_GRID, relation: relation, bodyUseLabel: bodyUseLabel };
+})(typeof window !== "undefined" ? window : globalThis);
+/* == end pure == */
+
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var n1 = $("n1"), n2 = $("n2");
+  var results = $("results"), calcs = $("calcs"), summary = $("summary"), empty = $("empty");
+
+  function readInt(el){
+    var v = el.value.trim();
+    if (v === "") return null;
+    if (!/^\d+$/.test(v)) return null;
+    var n = parseInt(v, 10);
+    return isFinite(n) ? n : null;
+  }
+
+
+  function figure(lines, moving, opts){
+    var fig = document.createElement("div");
+    fig.className = "fig";
+    for (var i = 5; i >= 0; i--){
+      var row = document.createElement("div");
+      row.className = "row" + (moving === i + 1 ? " active" : "");
+      var idx = document.createElement("span");
+      idx.className = "idx";
+      idx.textContent = String(i + 1);
+      var bar = document.createElement("span");
+      bar.className = "bar " + (lines[i] ? "yang" : "yin");
+      row.appendChild(idx);
+      row.appendChild(bar);
+      var mark = document.createElement("span");
+      mark.className = "mark";
+      if (opts && opts.mark && moving === i + 1){
+        var tag = document.createElement("span");
+        tag.textContent = "动";
+        mark.appendChild(tag);
+      }
+      row.appendChild(mark);
+      fig.appendChild(row);
+    }
+    return fig;
+  }
+
+  function token(pos, name, wu, role){
+    var t = document.createElement("div");
+    t.className = "token";
+    var a = document.createElement("span"); a.className = "pos"; a.textContent = pos;
+    var b = document.createElement("span"); b.className = "nm"; b.textContent = name;
+    var c = document.createElement("span"); c.className = "wx"; c.textContent = wu;
+    t.appendChild(a); t.appendChild(b); t.appendChild(c);
+    if (role){
+      var r = document.createElement("span");
+      r.className = "role" + (role === "体" ? " ti" : "");
+      r.textContent = role;
+      t.appendChild(r);
+    }
+    return t;
+  }
+
+  function card(title, nameText, nameSub){
+    var c = document.createElement("article");
+    c.className = "card";
+    var h = document.createElement("h2"); h.textContent = title;
+    var p = document.createElement("p"); p.className = "name";
+    p.textContent = nameText;
+    if (nameSub){
+      var s = document.createElement("small"); s.textContent = nameSub;
+      p.appendChild(s);
+    }
+    c.appendChild(h); c.appendChild(p);
+    return c;
+  }
+
+  function relLine(k, v){
+    var p = document.createElement("p");
+    p.className = "rel";
+    var a = document.createElement("span"); a.className = "k"; a.textContent = k;
+    p.appendChild(a);
+    p.appendChild(document.createTextNode(v));
+    return p;
+  }
+
+  function render(data){
+    results.innerHTML = "";
+    calcs.innerHTML = "";
+    summary.innerHTML = "";
+
+    // 计算过程
+    var items = [
+      ["上卦", data.input.n1 + " ÷ 8 余 " + data.upper.num + " → " + data.upper.name + "（" + data.upper.wu + "）"],
+      ["下卦", data.input.n2 + " ÷ 8 余 " + data.lower.num + " → " + data.lower.name + "（" + data.lower.wu + "）"],
+      ["动爻", "(" + data.input.n1 + " + " + data.input.n2 + ") ÷ 6 余 " + data.moving + " → 第 " + data.moving + " 爻（" + (data.moving <= 3 ? "下卦" : "上卦") + "）"]
+    ];
+    items.forEach(function(it){
+      var d = document.createElement("div");
+      d.className = "calc";
+      d.appendChild(document.createTextNode(it[0]));
+      var b = document.createElement("b"); b.textContent = it[1];
+      d.appendChild(b);
+      calcs.appendChild(d);
+    });
+
+    // 本卦
+    var ben = card("本卦", data.ben.name, "上" + data.ben.upper + data.ben.upperWu + " / 下" + data.ben.lower + data.ben.lowerWu);
+    ben.appendChild(figure(data.lines, data.moving, { mark: true }));
+    var tb = document.createElement("div"); tb.className = "tokens";
+    tb.appendChild(token("上卦", data.ben.upper, data.ben.upperWu, data.ben.bodySide === "上" ? "体" : "用"));
+    tb.appendChild(token("下卦", data.ben.lower, data.ben.lowerWu, data.ben.bodySide === "下" ? "体" : "用"));
+    ben.appendChild(tb);
+    ben.appendChild(relLine("体用", window.Pan.bodyUseLabel(data.ben.relation)));
+    results.appendChild(ben);
+
+    // 互卦
+    var hu = card("互卦", data.hu.name, "上" + data.hu.upper + data.hu.upperWu + " / 下" + data.hu.lower + data.hu.lowerWu);
+    hu.appendChild(figure([data.lines[1], data.lines[2], data.lines[3], data.lines[2], data.lines[3], data.lines[4]], 0, null));
+    var th = document.createElement("div"); th.className = "tokens";
+    th.appendChild(token("上互", data.hu.upper, data.hu.upperWu, ""));
+    th.appendChild(token("下互", data.hu.lower, data.hu.lowerWu, ""));
+    hu.appendChild(th);
+    hu.appendChild(relLine("对体", data.hu.upperRelation + "、" + data.hu.lowerRelation));
+    results.appendChild(hu);
+
+    // 变卦
+    var bian = card("变卦", data.bian.name, "上" + data.bian.upper + data.bian.upperWu + " / 下" + data.bian.lower + data.bian.lowerWu);
+    bian.appendChild(figure(data.bian.lines, data.moving, { mark: true }));
+    var tc = document.createElement("div"); tc.className = "tokens";
+    tc.appendChild(token("上卦", data.bian.upper, data.bian.upperWu, data.bian.bodySide === "上" ? "体" : "用"));
+    tc.appendChild(token("下卦", data.bian.lower, data.bian.lowerWu, data.bian.bodySide === "下" ? "体" : "用"));
+    bian.appendChild(tc);
+    bian.appendChild(relLine("体用", window.Pan.bodyUseLabel(data.bian.relation)));
+    results.appendChild(bian);
+
+    // 汇总
+    summary.appendChild(function(){
+      var d = document.createElement("div");
+      var k = document.createElement("span"); k.className = "k"; k.textContent = "体卦";
+      d.appendChild(k);
+      d.appendChild(document.createTextNode(data.ben.bodySide + "卦 " + (data.ben.bodySide === "上" ? data.ben.upper : data.ben.lower) + "（" + data.ben.bodyWu + "）"));
+      return d;
+    }());
+    [["本卦", window.Pan.bodyUseLabel(data.ben.relation)],
+     ["互卦", data.hu.lowerRelation + "、" + data.hu.upperRelation],
+     ["变卦", window.Pan.bodyUseLabel(data.bian.relation)]].forEach(function(pair){
+      var d = document.createElement("div");
+      var k = document.createElement("span"); k.className = "k"; k.textContent = pair[0];
+      d.appendChild(k);
+      d.appendChild(document.createTextNode(pair[1]));
+      summary.appendChild(d);
+    });
+
+    results.hidden = false;
+    calcs.hidden = false;
+    summary.hidden = false;
+    empty.hidden = true;
+  }
+
+  function update(){
+    var a = readInt(n1), b = readInt(n2);
+    if (a === null || b === null){
+      results.hidden = true;
+      calcs.hidden = true;
+      summary.hidden = true;
+      empty.hidden = false;
+      empty.textContent = (n1.value.trim() === "" || n2.value.trim() === "") ? "尚未排盘。" : "请输入非负整数。";
+      return null;
+    }
+    var data = window.Pan.computePan(a, b);
+    render(data);
+    return data;
+  }
+
+  $("fillTime").addEventListener("click", function(){
+    var d = new Date();
+    n1.value = String(d.getHours());
+    n2.value = String(d.getMinutes());
+    update();
+  });
+  $("run").addEventListener("click", function(){
+    var data = update();
+    if (data) saveRecord(data);
+  });
+  n1.addEventListener("input", update);
+  n2.addEventListener("input", update);
+  n1.addEventListener("keydown", function(e){ if (e.key === "Enter") update(); });
+  n2.addEventListener("keydown", function(e){ if (e.key === "Enter") update(); });
+
+  // 支持 ?n1=19&n2=25 直接分享排盘结果
+  (function(){
+    try {
+      var q = new URLSearchParams(location.search);
+      var a = q.get("n1"), b = q.get("n2");
+      if (a !== null && /^\d+$/.test(a)) n1.value = a;
+      if (b !== null && /^\d+$/.test(b)) n2.value = b;
+      if (n1.value !== "" && n2.value !== "") update();
+    } catch (e) {}
+  })();
+
+  // ---------- 弹窗管理 ----------
+  var lastFocus = null;
+
+  var mBagua = { el: $("baguaModal"), open: $("openBagua"), close: $("closeBagua") };
+  var mArchive = { el: $("archiveModal"), open: $("openArchive"), close: $("closeArchive") };
+  var MODALS = [mBagua, mArchive];
+
+  function lockScroll(on){
+    var b = document.body;
+    if (!b || !b.style) return;
+    b.style.overflow = on ? "hidden" : "";
+  }
+
+  function anyOpen(){
+    for (var i = 0; i < MODALS.length; i++){
+      if (MODALS[i].el && !MODALS[i].el.hidden) return true;
+    }
+    return false;
+  }
+
+  function openModal(m){
+    if (!m || !m.el) return;
+    for (var i = 0; i < MODALS.length; i++){
+      if (MODALS[i] !== m && MODALS[i].el) MODALS[i].el.hidden = true;
+    }
+    lastFocus = document.activeElement || null;
+    m.el.hidden = false;
+    lockScroll(true);
+    if (m.close && m.close.focus) m.close.focus();
+  }
+
+  function closeModal(m){
+    if (!m || !m.el || m.el.hidden) return;
+    m.el.hidden = true;
+    if (!anyOpen()) lockScroll(false);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  MODALS.forEach(function(m){
+    if (m.open) m.open.addEventListener("click", function(){
+      if (m === mArchive) renderArchive();
+      openModal(m);
+    });
+    if (m.close) m.close.addEventListener("click", function(){ closeModal(m); });
+    if (m.el) m.el.addEventListener("click", function(e){
+      var t = e && e.target;
+      while (t && t !== m.el){
+        if (t.getAttribute && t.getAttribute("data-close")){ closeModal(m); return; }
+        t = t.parentNode;
+      }
+    });
+  });
+
+  if (document.addEventListener){
+    document.addEventListener("keydown", function(e){
+      if (!e || e.key !== "Escape") return;
+      for (var i = 0; i < MODALS.length; i++) closeModal(MODALS[i]);
+    });
+  }
+
+  // ---------- 观象录：本地起卦存档 ----------
+  var ARCHIVE_NAME = "观象录";          // 想换名字，只改这一处
+  var STORE_KEY = "guanxianglu.v1";
+  var memory = [];
+
+  function readArchive(){
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw === null) return memory.slice();
+      var v = JSON.parse(raw);
+      return Array.isArray(v) ? v : [];
+    } catch (err){ return memory.slice(); }
+  }
+
+  function writeArchive(list){
+    memory = list.slice();
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (err) {}
+  }
+
+  function pad2(n){ return (n < 10 ? "0" : "") + n; }
+
+  function fmtTime(ts){
+    var d = new Date(ts);
+    return pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " +
+           pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+  }
+
+  // 互卦关系的措辞：下互生体 / 体生下互 …
+  function mutualPhrase(wu, bodyWu, label){
+    var r = window.Pan.relation(wu, bodyWu);
+    if (r === "生体") return label + "生体";
+    if (r === "克体") return label + "克体";
+    if (r === "比和") return label + "比和";
+    if (r === "体生用") return "体生" + label;
+    if (r === "体克用") return "体克" + label;
+    return label;
+  }
+
+  // 上下互同五行、同关系时的合写：双金克体 / 体克双金 …
+  function doublePhrase(wu, rel){
+    if (rel === "生体") return "双" + wu + "生体";
+    if (rel === "克体") return "双" + wu + "克体";
+    if (rel === "比和") return "双" + wu + "比和";
+    if (rel === "体生用") return "体生双" + wu;
+    if (rel === "体克用") return "体克双" + wu;
+    return "双" + wu;
+  }
+
+  // 例：火风鼎 → 泽天夬 → 山风蛊（体生用｜双金克体｜体克用）
+  function summaryOf(a, b){
+    var d = window.Pan.computePan(a, b);
+    var benRel = window.Pan.bodyUseLabel(d.ben.relation);
+    var relU = window.Pan.relation(d.hu.upperWu, d.ben.bodyWu);
+    var relL = window.Pan.relation(d.hu.lowerWu, d.ben.bodyWu);
+    var huRel;
+    if (d.hu.upperWu === d.hu.lowerWu && relU === relL){
+      huRel = doublePhrase(d.hu.upperWu, relU);
+    } else {
+      huRel = mutualPhrase(d.hu.upperWu, d.ben.bodyWu, "上互") + "、" +
+              mutualPhrase(d.hu.lowerWu, d.ben.bodyWu, "下互");
+    }
+    var bianRel = window.Pan.bodyUseLabel(d.bian.relation);
+    return d.ben.name + " → " + d.hu.name + " → " + d.bian.name +
+           "（" + benRel + "｜" + huRel + "｜" + bianRel + "）";
+  }
+
+  function updateArchiveCount(){
+    var btn = $("openArchive");
+    if (btn) btn.textContent = ARCHIVE_NAME + " (" + readArchive().length + ")";
+    var title = $("archiveTitle");
+    if (title) title.textContent = ARCHIVE_NAME;
+  }
+
+  function saveRecord(data){
+    var box = $("subject");
+    var q = ((box && box.value) || "").replace(/^\s+|\s+$/g, "").slice(0, 60);
+    var list = readArchive();
+    var now = Date.now();
+    list.unshift({
+      id: String(now) + "-" + Math.random().toString(36).slice(2, 6),
+      n1: data.input.n1,
+      n2: data.input.n2,
+      q: q || "未记事由",
+      ts: now,
+      note: ""
+    });
+    writeArchive(list);
+    updateArchiveCount();
+  }
+
+  function renderArchive(){
+    updateArchiveCount();
+    var box = $("archiveList");
+    if (!box) return;
+    box.innerHTML = "";
+
+    var list = readArchive();
+    if (!list.length){
+      var emptyEl = document.createElement("div");
+      emptyEl.className = "archive-empty";
+      emptyEl.textContent = "还没有记录。填好所问何事和两个数，点「排盘」就会存下来。";
+      box.appendChild(emptyEl);
+      return;
+    }
+
+    list.forEach(function(rec){
+      var card = document.createElement("div");
+      card.className = "rec";
+
+      var top = document.createElement("div");
+      top.className = "rec__top";
+
+      var q = document.createElement("div");
+      q.className = "rec__q";
+      q.textContent = rec.q || "未记事由";
+
+      var meta = document.createElement("div");
+      meta.className = "rec__meta";
+      meta.textContent = fmtTime(rec.ts) + " · [" + rec.n1 + ", " + rec.n2 + "]";
+
+      var del = document.createElement("button");
+      del.type = "button";
+      del.className = "rec__del";
+      del.textContent = "×";
+      del.setAttribute("aria-label", "删除这条记录");
+      del.addEventListener("click", function(ev){
+        if (ev && ev.stopPropagation) ev.stopPropagation();
+        if (!window.confirm("删除这条记录？")) return;
+        writeArchive(readArchive().filter(function(x){ return x.id !== rec.id; }));
+        renderArchive();
+      });
+
+      top.appendChild(q);
+      top.appendChild(meta);
+      top.appendChild(del);
+
+      var sum = document.createElement("button");
+      sum.type = "button";
+      sum.className = "rec__sum";
+      try { sum.textContent = summaryOf(rec.n1, rec.n2); }
+      catch (err){ sum.textContent = "（这条记录的数据无法解析）"; }
+      sum.addEventListener("click", function(){
+        n1.value = String(rec.n1);
+        n2.value = String(rec.n2);
+        update();
+        closeModal(mArchive);
+      });
+
+      var note = document.createElement("input");
+      note.type = "text";
+      note.className = "rec__note";
+      note.maxLength = 120;
+      note.placeholder = "点此简记实际结果...";
+      note.value = rec.note || "";
+
+      var commit = function(){
+        var all = readArchive();
+        for (var i = 0; i < all.length; i++){
+          if (all[i].id === rec.id){
+            all[i].note = note.value.slice(0, 120);
+            break;
+          }
+        }
+        writeArchive(all);
+      };
+      note.addEventListener("input", commit);
+      note.addEventListener("blur", commit);
+      note.addEventListener("keydown", function(ev){
+        if (ev && ev.key === "Enter"){ commit(); if (note.blur) note.blur(); }
+      });
+
+      card.appendChild(top);
+      card.appendChild(sum);
+      card.appendChild(note);
+      box.appendChild(card);
+    });
+  }
+
+  updateArchiveCount();
+})();
+</script>
+</body>
+</html>
