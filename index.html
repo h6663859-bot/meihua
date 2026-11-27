@@ -26,21 +26,21 @@
     font-size:16px; line-height:1.5;
     padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 24px);
   }
-  .wrap{max-width:1020px;margin:0 auto;padding:28px 16px 0}
-  header.top{margin-bottom:20px}
-  h1{font-size:20px;font-weight:600;letter-spacing:.02em;margin:0 0 4px}
+  .wrap{max-width:1020px;margin:0 auto;padding:16px 16px 0}
+  header.top{margin-bottom:10px}
+  h1{font-size:18px;font-weight:600;letter-spacing:.02em;margin:8px 0}
   .sub{color:var(--muted);font-size:13px}
 
   .panel{
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:16px;margin-bottom:16px;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:12px;margin-bottom:12px;
   }
-  .fields{display:flex;flex-wrap:wrap;gap:12px}
+  .fields{display:flex;flex-wrap:wrap;gap:10px}
   .field{flex:1 1 180px;min-width:150px}
-  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;line-height:1.2}
   .field input{
-    width:100%;padding:11px 12px;font-size:16px;color:var(--ink);
-    background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    width:100%;height:36px;padding:0 10px;font-size:15px;color:var(--ink);
+    background:var(--bg);border:1px solid var(--line);border-radius:9px;
     outline:none;-webkit-appearance:none;appearance:none;
   }
   .field input:focus{border-color:var(--ink-2)}
@@ -49,7 +49,7 @@
   .field input[type=number]{-moz-appearance:textfield}
 
   .actions{
-    display:grid;grid-template-columns:repeat(6,1fr);gap:8px;width:100%;margin-top:14px;
+    display:grid;grid-template-columns:repeat(6,1fr);gap:8px;width:100%;margin-top:10px;
   }
   button{
     font:inherit;font-size:14px;padding:10px 16px;border-radius:10px;
@@ -77,13 +77,13 @@
     font-size:11px;font-weight:600;color:var(--muted);margin:0 0 1px;
     letter-spacing:.06em;
   }
-  .card .name{font-size:14px;font-weight:700;margin:0 0 6px;line-height:1.25;letter-spacing:.01em}
+  .card .name{font-size:14px;font-weight:700;margin:0 0 4px;line-height:1.2;letter-spacing:.01em}
   .card .name small{
     display:block;font-size:11px;font-weight:400;color:var(--muted);
     margin:2px 0 0;line-height:1.3;
   }
 
-  .fig{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+  .fig{display:flex;flex-direction:column;gap:3px;margin-bottom:4px}
   .row{display:flex;align-items:center;gap:4px}
   .row .idx{
     width:10px;flex:0 0 10px;text-align:center;font-size:10px;color:var(--muted);
@@ -91,7 +91,7 @@
   }
   .bar{
     --c:var(--ink);
-    flex:1 1 auto;height:4px;min-width:0;
+    flex:1 1 auto;height:3px;min-width:0;
   }
   .bar.yang{background:var(--c);border-radius:3px}
   .bar.yin{
@@ -108,7 +108,7 @@
     border-radius:999px;padding:2px 4px;
   }
 
-  .tokens{border-top:1px solid var(--line);padding-top:6px;margin-bottom:6px}
+  .tokens{border-top:1px solid var(--line);padding-top:4px;margin-bottom:4px}
   .token{
     display:flex;align-items:center;gap:4px;font-size:11px;line-height:1.4;padding:1px 0;color:var(--ink-2);
   }
@@ -121,16 +121,10 @@
   }
   .role.ti{background:var(--ink);color:var(--bg)}
 
-  .rel{font-size:11px;line-height:1.4;color:var(--ink-2);margin:0;padding-top:6px;border-top:1px solid var(--line)}
+  .rel{font-size:11px;line-height:1.4;color:var(--ink-2);margin:0;padding-top:4px;border-top:1px solid var(--line)}
   .rel .k{color:var(--muted);margin-right:4px}
   .rel + .rel{margin-top:6px;border-top:0;padding-top:0}
 
-  .summary{
-    margin-top:10px;background:var(--card);border:1px solid var(--line);
-    border-radius:10px;padding:10px 12px;font-size:11px;line-height:1.5;color:var(--ink-2);
-  }
-  .summary div{display:flex;gap:6px;padding:1px 0}
-  .summary .k{color:var(--muted);flex:0 0 44px}
 
   /* ---------- 八卦类象表弹窗 ---------- */
   .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
@@ -178,7 +172,7 @@
   .note{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.7}
 
   /* ---------- 观象录 ---------- */
-  .field--wide{flex:1 1 100%;margin-bottom:12px}
+  .field--wide{flex:1 1 100%;margin-bottom:10px}
   .rec{
     border:1px solid var(--line);border-radius:12px;padding:10px 12px;
     margin-bottom:10px;background:var(--bg);
@@ -263,7 +257,6 @@
   </section>
 
   <section class="results" id="results" hidden></section>
-  <div class="summary" id="summary" hidden></div>
 </div>
 
 <div class="modal" id="baguaModal" hidden role="dialog" aria-modal="true" aria-labelledby="baguaTitle">
@@ -505,7 +498,7 @@
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
   var n1 = $("n1"), n2 = $("n2");
-  var results = $("results"), summary = $("summary");
+  var results = $("results");
 
   function readInt(el){
     var v = el.value.trim();
@@ -583,7 +576,6 @@
 
   function render(data){
     results.innerHTML = "";
-    summary.innerHTML = "";
 
     // 本卦
     var ben = card("本卦", data.ben.name, "上" + data.ben.upper + data.ben.upperWu + " / 下" + data.ben.lower + data.ben.lowerWu);
@@ -615,33 +607,15 @@
     bian.appendChild(relLine("体用", window.Pan.bodyUseLabel(data.bian.relation)));
     results.appendChild(bian);
 
-    // 汇总
-    summary.appendChild(function(){
-      var d = document.createElement("div");
-      var k = document.createElement("span"); k.className = "k"; k.textContent = "体卦";
-      d.appendChild(k);
-      d.appendChild(document.createTextNode(data.ben.bodySide + "卦 " + (data.ben.bodySide === "上" ? data.ben.upper : data.ben.lower) + "（" + data.ben.bodyWu + "）"));
-      return d;
-    }());
-    [["本卦", window.Pan.bodyUseLabel(data.ben.relation)],
-     ["互卦", data.hu.lowerRelation + "、" + data.hu.upperRelation],
-     ["变卦", window.Pan.bodyUseLabel(data.bian.relation)]].forEach(function(pair){
-      var d = document.createElement("div");
-      var k = document.createElement("span"); k.className = "k"; k.textContent = pair[0];
-      d.appendChild(k);
-      d.appendChild(document.createTextNode(pair[1]));
-      summary.appendChild(d);
-    });
-
     results.hidden = false;
-    summary.hidden = false;
+    results.style.display = "";
   }
 
   function update(){
     var a = readInt(n1), b = readInt(n2);
     if (a === null || b === null){
       results.hidden = true;
-      summary.hidden = true;
+      results.style.display = "none";
       return null;
     }
     var data = window.Pan.computePan(a, b);
@@ -660,13 +634,14 @@
     if (data) saveRecord(data);
   });
 
-  // 清空：只清当前页面状态，不碰 localStorage 里的观象录
+  // 清空：清输入框 + 清空并隐藏结果区；不碰 localStorage 里的观象录
   $("clear").addEventListener("click", function(){
     $("subject").value = "";
     n1.value = "";
     n2.value = "";
+    results.innerHTML = "";
     results.hidden = true;
-    summary.hidden = true;
+    results.style.display = "none";
   });
   n1.addEventListener("input", update);
   n2.addEventListener("input", update);
