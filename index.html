@@ -194,19 +194,16 @@
   }
   .rec__del:hover{color:var(--accent);background:var(--chip)}
   .rec__sum{
-    display:block;width:100%;text-align:left;padding:6px 0 2px;margin:0;
-    border:0;background:none;font-size:12.5px;line-height:1.55;color:var(--ink-2);
-    cursor:pointer;word-break:break-word;
+    display:block;width:100%;text-align:left;padding:6px 0 0;margin:0;
+    border:0;background:none;cursor:pointer;word-break:break-word;
   }
-  .rec__sum:hover{color:var(--ink)}
-  .rec__sum .arrow{color:var(--muted);padding:0 2px}
-  .rec__note{
-    width:100%;margin-top:4px;padding:6px 8px;font:inherit;font-size:12.5px;
-    color:var(--ink);background:var(--card);border:1px solid var(--line);
-    border-radius:8px;outline:none;display:block;
+  .rec__flow{
+    display:block;font-size:12.5px;line-height:1.5;color:var(--ink-2);
   }
-  .rec__note:focus{border-color:var(--ink-2)}
-  .rec__note::placeholder{color:var(--muted)}
+  .rec__rel{
+    display:block;font-size:11px;line-height:1.45;color:var(--muted);margin-top:1px;
+  }
+  .rec__sum:hover .rec__flow{color:var(--ink)}
   .archive-empty{color:var(--muted);font-size:13px;text-align:center;padding:22px 0}
 
   @media (max-width:640px){
@@ -339,7 +336,6 @@
     <div class="modal__head">
       <div>
         <h2 id="archiveTitle">观象录</h2>
-        <div class="sub">起卦存档 · 最新的在最上面</div>
       </div>
       <button type="button" class="modal__close" id="closeArchive" aria-label="关闭" data-close="archive">×</button>
     </div>
@@ -781,8 +777,10 @@
               mutualPhrase(d.hu.lowerWu, d.ben.bodyWu, "下互");
     }
     var bianRel = window.Pan.bodyUseLabel(d.bian.relation);
-    return d.ben.name + " → " + d.hu.name + " → " + d.bian.name +
-           "（" + benRel + "｜" + huRel + "｜" + bianRel + "）";
+    return {
+      flow: d.ben.name + " → " + d.hu.name + " → " + d.bian.name,
+      rel: benRel + "｜" + huRel + "｜" + bianRel
+    };
   }
 
   function updateArchiveCount(){
@@ -858,8 +856,21 @@
       var sum = document.createElement("button");
       sum.type = "button";
       sum.className = "rec__sum";
-      try { sum.textContent = summaryOf(rec.n1, rec.n2); }
-      catch (err){ sum.textContent = "（这条记录的数据无法解析）"; }
+
+      var flow = document.createElement("span");
+      flow.className = "rec__flow";
+      var rel = document.createElement("span");
+      rel.className = "rec__rel";
+      try {
+        var parts = summaryOf(rec.n1, rec.n2);
+        flow.textContent = parts.flow;
+        rel.textContent = parts.rel;
+      } catch (err){
+        flow.textContent = "（这条记录的数据无法解析）";
+      }
+      sum.appendChild(flow);
+      sum.appendChild(rel);
+
       sum.addEventListener("click", function(){
         n1.value = String(rec.n1);
         n2.value = String(rec.n2);
@@ -867,32 +878,8 @@
         closeModal(mArchive);
       });
 
-      var note = document.createElement("input");
-      note.type = "text";
-      note.className = "rec__note";
-      note.maxLength = 120;
-      note.placeholder = "点此简记实际结果...";
-      note.value = rec.note || "";
-
-      var commit = function(){
-        var all = readArchive();
-        for (var i = 0; i < all.length; i++){
-          if (all[i].id === rec.id){
-            all[i].note = note.value.slice(0, 120);
-            break;
-          }
-        }
-        writeArchive(all);
-      };
-      note.addEventListener("input", commit);
-      note.addEventListener("blur", commit);
-      note.addEventListener("keydown", function(ev){
-        if (ev && ev.key === "Enter"){ commit(); if (note.blur) note.blur(); }
-      });
-
       card.appendChild(top);
       card.appendChild(sum);
-      card.appendChild(note);
       box.appendChild(card);
     });
   }
